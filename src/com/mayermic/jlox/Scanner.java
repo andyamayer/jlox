@@ -78,7 +78,24 @@ public class Scanner {
                 if (match('/')) {
                     // A comment goes until the end of the line.
                     while (peek() != '\n' && !isAtEnd()) advance();
-                } else {
+                } else if (match('*')) {
+                    // A comment goes until a '*/' Token is found.
+                    boolean commentTerminated = false;
+                    while (!commentTerminated) {
+                        while (peek() != '\n' && peek() != '*' && !isAtEnd()) advance();
+                        if (peek() == '\n') {
+                            advance();
+                            line++;
+                        }
+                        if (peek() == '*' && peekNext() == '/') {
+                            advance();
+                            advance();
+                            commentTerminated = true;
+                        }
+                        if (isAtEnd()) commentTerminated = true;
+                    }
+                }
+                else {
                     addToken(SLASH);
                 }
                 break;
